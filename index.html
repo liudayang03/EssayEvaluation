@@ -1,48 +1,414 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文书硬核质检系统</title>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 900px; margin: 30px auto; padding: 0 20px; background: #f9f9f9; }
-        h1 { color: #1a1a1a; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
-        textarea { width: 100%; height: 400px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        button { background: #2563eb; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer; margin: 10px 0; }
-        button:hover { background: #1d4ed8; }
-        #result { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 25px; margin-top: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); white-space: pre-wrap; line-height: 1.6; }
-        .error { color: #dc2626; background: #fee2e2; padding: 10px; border-radius: 6px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .main {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-section label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .result-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-section h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section h2:before {
+            content: '📄';
+            font-size: 1.8rem;
+        }
+
+        #result {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        /* 格式化后的结果样式 */
+        .result-part {
+            margin-bottom: 30px;
+        }
+
+        .part-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 3px solid #e0e0e0;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        .high-risk {
+            color: #dc3545;
+            font-weight: 600;
+            display: inline-block;
+            background: #fff5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .qualified {
+            color: #ffc107;
+            font-weight: 600;
+            display: inline-block;
+            background: #fff9e6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .excellent {
+            color: #28a745;
+            font-weight: 600;
+            display: inline-block;
+            background: #f0fff4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .encourage {
+            color: #28a745;
+            font-weight: 600;
+            display: inline-block;
+            background: #f0fff4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .suggestion {
+            color: #667eea;
+            font-weight: 600;
+            display: inline-block;
+            background: #f0f0ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .item-content {
+            color: #555;
+            line-height: 1.6;
+            margin-top: 8px;
+            padding-left: 10px;
+        }
+
+        .quote {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            font-style: italic;
+            color: #666;
+            margin: 10px 0;
+            border-left: 3px solid #999;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #dc3545;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+        }
     </style>
 </head>
 <body>
-    <h1>📄 文书硬核质检系统</h1>
-    <textarea id="essay" placeholder="在此粘贴你的申请文书..."></textarea>
-    <br>
-    <button onclick="analyze()">开始审计</button>
-    <div id="result"></div>
+    <div class="container">
+        <div class="header">
+            <h1>📝 文书硬核质检系统</h1>
+            <p>10项负面清单 · 6项正面清单 · 深度审计</p>
+        </div>
+
+        <div class="main">
+            <div class="input-section">
+                <label for="essay">粘贴你的申请文书</label>
+                <textarea id="essay" placeholder="在这里粘贴你的文书内容..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="analyze()" id="analyzeBtn">开始审计</button>
+                <button class="btn btn-secondary" onclick="clearEssay()">清空</button>
+            </div>
+
+            <div class="result-section">
+                <h2>审计报告</h2>
+                <div id="result">等待审计...</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            ⚡ 硬核质检 · 16项标准 · 三段论输出
+        </div>
+    </div>
 
     <script>
         async function analyze() {
             const essay = document.getElementById('essay').value;
+            const btn = document.getElementById('analyzeBtn');
             const resultDiv = document.getElementById('result');
-            if (!essay) return alert('请输入文书内容');
 
-            resultDiv.textContent = '⏳ 审计中... (约5-8秒)';
+            if (!essay || essay.trim() === '') {
+                alert('请输入文书内容');
+                return;
+            }
+
+            btn.disabled = true;
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>审计中... (约5-8秒)</div>';
+
             try {
                 const res = await fetch('/api/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ essay })
                 });
+
                 const data = await res.json();
+
                 if (data.error) {
                     resultDiv.innerHTML = `<div class="error">❌ ${data.error}</div>`;
                 } else {
-                    resultDiv.innerHTML = data.analysis.replace(/\n/g, '<br>');
+                    // 格式化输出
+                    resultDiv.innerHTML = formatResult(data.analysis);
                 }
             } catch (err) {
                 resultDiv.innerHTML = `<div class="error">❌ 请求失败: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
             }
+        }
+
+        function formatResult(text) {
+            // 按两部分拆分
+            const parts = text.split(/\n\s*2\.\s+额外建议/);
+            const part1 = parts[0].replace(/^1\.\s+文书评估结果/, '').trim();
+            const part2 = parts[1] ? '2. 额外建议' + parts[1] : '';
+
+            let html = '<div class="result-part">';
+            html += '<div class="part-title">📋 文书评估结果</div>';
+            
+            // 解析第一部分（10项）
+            const items1 = part1.split(/\n\s*\d+\.\d+\s+/);
+            items1.forEach(item => {
+                if (!item.trim()) return;
+                
+                const titleMatch = item.match(/^([^\n]+)/);
+                const title = titleMatch ? titleMatch[1] : '';
+                const content = item.replace(title, '').trim();
+                
+                let levelClass = '';
+                if (content.includes('高风险')) levelClass = 'high-risk';
+                else if (content.includes('合格')) levelClass = 'qualified';
+                else if (content.includes('优秀')) levelClass = 'excellent';
+                
+                html += '<div class="item">';
+                html += `<div class="item-title">${title}</div>`;
+                html += `<div class="item-content ${levelClass}">${content.replace(/\n/g, '<br>')}</div>`;
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            
+            if (part2) {
+                html += '<div class="result-part">';
+                html += '<div class="part-title">💡 额外建议</div>';
+                
+                // 解析第二部分（6项）
+                const items2 = part2.split(/\n\s*\d+\.\d+\s+/);
+                items2.forEach(item => {
+                    if (!item.trim()) return;
+                    
+                    const titleMatch = item.match(/^([^\n]+)/);
+                    const title = titleMatch ? titleMatch[1] : '';
+                    const content = item.replace(title, '').trim();
+                    
+                    let levelClass = '';
+                    if (content.includes('写对了就鼓励')) levelClass = 'encourage';
+                    else if (content.includes('没写可以建议')) levelClass = 'suggestion';
+                    
+                    html += '<div class="item">';
+                    html += `<div class="item-title">${title}</div>`;
+                    html += `<div class="item-content ${levelClass}">${content.replace(/\n/g, '<br>')}</div>`;
+                    html += '</div>';
+                });
+                
+                html += '</div>';
+            }
+            
+            return html;
+        }
+
+        function clearEssay() {
+            document.getElementById('essay').value = '';
+            document.getElementById('result').innerHTML = '等待审计...';
         }
     </script>
 </body>
