@@ -6,7 +6,15 @@ export default async function handler(req, res) {
   }
 
   try {
- const systemPrompt = `你是一位资深的美国大学申请文书审计师。请严格按照以下《文书硬核质检系统标准手册》对学生的文书进行深度审计。
+    // 2. 从请求体中获取文书内容
+    const { essay } = req.body;
+    
+    if (!essay || typeof essay !== 'string') {
+      return res.status(400).json({ error: '无效的文书内容' });
+    }
+
+    // 3. 完整的系统标准
+    const systemPrompt = `你是一位资深的美国大学申请文书审计师。请严格按照以下《文书硬核质检系统标准手册》对学生的文书进行深度审计。
 
 文书硬核质检系统标准手册（完整版）
 
@@ -242,7 +250,7 @@ AI 必杀词：Tapestry, Beacon, Catalyst, Embark, Journey, Metamorphosis, Inval
 2.6 元认知水平
 写对了就鼓励 或 没写可以建议 加具体评价或修改建议。`;
 
-    // 3. 调用 DeepSeek API
+    // 4. 调用 DeepSeek API
     const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -267,11 +275,10 @@ AI 必杀词：Tapestry, Beacon, Catalyst, Embark, Journey, Metamorphosis, Inval
     const data = await response.json();
     const analysis = data.choices[0].message.content;
 
-    // 4. 返回结果
+    // 5. 返回结果
     res.status(200).json({ analysis });
   } catch (error) {
     console.error('评估过程出错:', error);
     res.status(500).json({ error: '评估失败: ' + error.message });
   }
-
 }
