@@ -241,26 +241,26 @@ AI必杀词清单：Tapestry, Beacon, Testament, Catalyst, Embark, Journey, Meta
 有硬性指标：是/否
 检查不通过则重新评估，直到全部确认。`;
     
-    // 4. 调用 DeepSeek API
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    // 4. 调用 Moonshot API
+    const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+        'Authorization': `Bearer ${process.env.MOONSHOT_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'moonshot-v1-32k',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `请根据以上标准审计这篇文书：\n\n${essay}` },
         ],
         temperature: 0.3,
-        max_tokens: 3000,
+        max_tokens: 8000,
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`DeepSeek API 调用失败: ${response.status}`);
+      throw new Error(`Moonshot API 调用失败: ${response.status}`);
     }
 
     const data = await response.json();
@@ -273,6 +273,7 @@ AI必杀词清单：Tapestry, Beacon, Testament, Catalyst, Embark, Journey, Meta
     res.status(500).json({ error: '评估失败: ' + error.message });
   }
 }
+
 
 
 
