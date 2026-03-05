@@ -285,7 +285,7 @@
     <div class="container">
         <div class="header">
             <h1>📝 美国本科文书质检系统</h1>
-            <p>10项负面清单 · 6项正面清单 · 深度审计</p>
+            <p>10项评估标准 · 深度审计</p>
         </div>
 
         <div class="main">
@@ -306,7 +306,7 @@
         </div>
 
         <div class="footer">
-            ⚡ 硬核质检 · 16项标准
+            ⚡ 硬核质检 · 10项标准
         </div>
     </div>
 
@@ -322,7 +322,7 @@
             }
 
             btn.disabled = true;
-            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>审计中... (约1分半)</div>';
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>审计中...</div>';
 
             try {
                 const res = await fetch('/api/evaluate', {
@@ -413,5 +413,6 @@
     </script>
 </body>
 </html>
+
 
 
