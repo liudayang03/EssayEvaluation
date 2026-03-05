@@ -322,7 +322,7 @@
             }
 
             btn.disabled = true;
-            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>审计中... (约45秒)</div>';
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>审计中... (约1分半)</div>';
 
             try {
                 const res = await fetch('/api/evaluate', {
@@ -413,4 +413,5 @@
     </script>
 </body>
 </html>
+
 
