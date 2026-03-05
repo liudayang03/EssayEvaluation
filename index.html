@@ -310,6 +310,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.bootcdn.net/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
     <script>
         async function analyze() {
             const essay = document.getElementById('essay').value;
@@ -318,6 +319,16 @@
 
             if (!essay || essay.trim() === '') {
                 alert('请输入文书内容');
+                return;
+            }
+
+            // 新增功能代码：MD5 指纹比对
+            const essayHash = md5(essay.trim());
+            const cachedResult = localStorage.getItem(essayHash);
+
+            // 如果存在缓存，直接显示结果并返回，停止请求
+            if (cachedResult) {
+                resultDiv.innerHTML = formatResult(cachedResult);
                 return;
             }
 
@@ -336,7 +347,8 @@
                 if (data.error) {
                     resultDiv.innerHTML = `<div class="error">❌ ${data.error}</div>`;
                 } else {
-                    // 格式化输出
+                    // 新增功能代码：将结果存入 localStorage
+                    localStorage.setItem(essayHash, data.analysis);
                     resultDiv.innerHTML = formatResult(data.analysis);
                 }
             } catch (err) {
@@ -413,8 +425,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
